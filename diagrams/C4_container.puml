@@ -1,0 +1,60 @@
+@startuml
+title Диаграмма контейнеров системы «Умный дом»
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Клиент, использующий систему для получения информации от устройств с датчиками")
+Person(admin, "Admin", "Технический специалист-администратор системы, управляющий устройствами в системе")
+
+System(WHSystem, "Smart Warmhouse System", "Система «Теплый дом»")
+
+Container_Boundary(WHSystem, "Система «Теплый дом»") {
+    Container(apiGateway, "Шлюз управления запросами", "Go", "Шлюз взаимодействия с системой")
+
+    Container(DeviceService, "Device Management Service", "Go", "Управление устройствами в системе")
+    Container(ScenarioService, "Scenario Service", "Go", "Сервис управления сценариями работы устройств и датчиков")
+    Container(TelemetryService, "Telemetry Service", "Go", "Сервис информации о телеметрии")
+
+    Container_Boundary(WHSystemService, "Сервисы устройств с датчиками системы «Теплый дом»") {
+        Container(ClimateControlService, "Climate Control Service", "Go", "Сервис для устройств с датчиками отопления и охлаждения")
+        Container(LightingService, "Lighting service", "Go", "Сервис для устройств с датчиками освещения")
+        Container(CCTVService, "Closed-Circuit Television", "Go", "Сервис для устройств для видеонаблюдения")
+        Container(GateControlService, "Gate Control Service", "Go", "Сервис для управления автоматическими воротами")
+    }
+
+    ContainerQueue(MessageBus, "Message Bus", "RabbitMQ", "Транспорт для отправки/получения событий")
+}
+
+Container_Boundary(Device, "Устройства с датчиками") {
+    System_Ext(smartDevice, "Smart Device", "Устройство с датчиками, совместимое с протоколом системы умный дом")
+}
+
+Rel(user, apiGateway, "Использование системы")
+Rel(admin, apiGateway, "Управление устройствами с датчиками в системе")
+
+Rel(apiGateway, DeviceService, "Управление устройствами с датчиками")
+Rel(apiGateway, ScenarioService, "Настройка сценариев использования устройств")
+Rel(apiGateway, TelemetryService, "Получение данных о телеметрии")
+
+Rel(apiGateway, ClimateControlService, "Передача показаний о температуре в помещении")
+Rel(apiGateway, LightingService, "Передача показаний об освещении в помещении")
+Rel(apiGateway, CCTVService, "Получение данных видеонаблюдения")
+Rel(apiGateway, GateControlService, "Передача данных о состоянии автоматических ворот")
+
+Rel(DeviceService, MessageBus, "Публикация и обработка состояния устройства и/или внутренних датчиков")
+Rel(ScenarioService, MessageBus, "Публикация и обработка конфигурации устройств пользователя")
+Rel(TelemetryService, MessageBus, "Публикация и обработка данных телеметрии устройств")
+
+Rel(ClimateControlService, MessageBus, "Публикация и обработка показаний о температуре в помещении")
+Rel(LightingService, MessageBus, "Публикация и обработка показаний об освещении в помещении")
+Rel(CCTVService, MessageBus, "Публикация и обработка данных о видеонаблюдении")
+Rel(GateControlService, MessageBus, "Публикация и обработка данных о состоянии автоматических ворот")
+
+Rel(ClimateControlService, smartDevice, "Управление датчиками устройств отопления")
+Rel(LightingService, smartDevice, "Управление датчиками устройств освещения")
+Rel(CCTVService, smartDevice, "Управление датчиками устройств видеонаблюдения")
+Rel(GateControlService, smartDevice, "Управление датчиками устройства автоматических ворот")
+
+@enduml

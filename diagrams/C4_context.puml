@@ -1,0 +1,18 @@
+@startuml
+title Диаграмма контекста системы «Умный дом»
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Клиент, использующий систему для получения информации от устройств с датчиками")
+Person(admin, "Admin", "Технический специалист-администратор системы, управляющий устройствами в системе")
+System(WHSystem, "Smart Warmhouse System", "Система «Теплый дом»")
+
+System_Ext(temperatureApi, "API получения температуры", "Получает температуру от датчиков с соответствующим типом")
+
+Rel(user, WHSystem, "Получает информацию от датчиков на устройствах")
+Rel(admin, WHSystem, "Управляет подключением и отключением устройств в системе")
+Rel(WHSystem,temperatureApi,"Получение данных о температуре в помещении")
+
+@enduml

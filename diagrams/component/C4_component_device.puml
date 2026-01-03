@@ -1,0 +1,26 @@
+@startuml
+title Диаграмма компонента «Устройство с датчиками системы «Теплый дом»»
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(admin, "Админ", "Технический специалист-администратор системы, управляющий устройствами в системе")
+Container_Boundary(WarmHouse, "Система «Теплый дом»") {
+ Container(DeviceService, "Device Management Service", "Go", "Управление устройствами в системе") {
+    Component(Controller, "REST Controller", "HTTP/JSON", "Контроллер запросов управления устройствами")
+    Component(Service, "Service", "Go", "Бизнес-логика управления устройствами в системе")
+    Component(Repository, "Repository", "Go", "Репозиторий работы с данными устройств в системе")
+ }
+}
+
+ContainerDb(Database, "Database", "PostgreSQL", "Хранение информации о типах устройствах")
+ContainerQueue(MessageBus, "Message Bus", "RabbitMQ", "Транспорт для отправки/получения событий")
+
+Rel(admin, Controller, "Добавление новых устройств и управление добавленными устройствами")
+Rel(Controller, Service, "Изменение состояния объектов устройств в системе")
+Rel(Service, Repository, "Работа с сущностями в базе данных устройств")
+Rel(Repository, Database, "Запись и получение данных")
+Rel(Service, MessageBus, "Публикация и получение событий состояния устройств и внутренних датчиков")
+
+@enduml

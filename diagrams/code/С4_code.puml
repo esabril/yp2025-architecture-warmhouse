@@ -1,0 +1,55 @@
+@startuml
+title Диаграмма кода компонента сервиса устройства отопления системы «Умный дом»
+
+class SensorHandler {
+    - db DbRepository
+    - temperatureService TemperatureService
+    + CreateSensor(ctx Context)
+    + UpdateSensor(ctx Context)
+    + DeleteSensor(ctx Context)
+    + GetSensors(ctx Context)
+    + GetSensorByID(ctx Context)
+    + GetTemperatureByLocation(ctx Context)
+}
+
+class DbRepository {
+    + SaveSensorData(data SensorResponse)
+}
+
+class SensorResponse {
+    - Value float64
+    - Unit string
+    - Timestamp time.Time
+    - Location string
+    - Status string
+    - SensorID string
+    - SensorType string
+    - Description string
+}
+
+class TemperatureService {
+    - baseUrl string
+    - httpClient HttpClient
+    + GetTemperature(location string)
+    + GetTemperatureByID(sensorID string)
+}
+
+class TemperatureResponse {
+    - Value float64
+    - Unit string
+    - Timestamp time.Time
+    - Location string
+    - Status string
+    - SensorID string
+    - SensorType string
+    - Description string
+}
+
+SensorHandler --> DbRepository : SaveSensorData
+SensorHandler --> SensorResponse
+
+SensorHandler --> TemperatureService : GetTemperature(location)
+
+TemperatureService --> TemperatureResponse
+
+@enduml

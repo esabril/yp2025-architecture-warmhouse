@@ -1,0 +1,20 @@
+@startuml
+title Диаграмма компонента API Gateway системы «Умный дом»
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Клиент, использующий систему для получения информации от устройств с датчиками")
+
+Container_Boundary(WarmHouse, "Система «Теплый дом»") {
+    Container(apiGateway, "Шлюз управления запросами", "Go") {
+        Component(Auth, "Auth Service", "Go", "Система авторизации и аутентификации пользователей")
+        Component(apiGatewayService, "Api Gateway Service", "Go", "Сервис взаимодействия с системой")
+    }
+}
+
+Rel(user, apiGatewayService, "HTTP/JSON", "Запрос за данными устройства с датчиками типа отопление/охлаждение")
+Rel(apiGatewayService, Auth, "Проверка токена авторизации и прав доступа")
+
+@enduml

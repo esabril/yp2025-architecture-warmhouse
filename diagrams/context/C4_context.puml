@@ -10,9 +10,13 @@ Person(admin, "Admin", "Технический специалист-админи
 System(WHSystem, "Smart Warmhouse System", "Система «Теплый дом»")
 
 System_Ext(temperatureApi, "API получения температуры", "Получает температуру от датчиков с соответствующим типом")
+Container_Boundary(Device, "Устройства с датчиками") {
+    System_Ext(smartDevice, "Smart Device", "Устройство с датчиками, совместимое с протоколом системы умный дом")
+}
 
 Rel(user, WHSystem, "Получает информацию от датчиков на устройствах")
 Rel(admin, WHSystem, "Управляет подключением и отключением устройств в системе")
 Rel(WHSystem,temperatureApi,"Получение данных о температуре в помещении")
+Rel(WHSystem,smartDevice,"Управление датчиками устройств")
 
 @enduml

@@ -1,0 +1,61 @@
+@startuml
+
+entity user {
+    * id UINT64 AI
+    ---
+    username: VARCHAR
+    password_hash: VARCHAR
+    email: VARCHAR
+}
+
+entity house {
+    * id UINT64 AI
+    ---
+    user_id: UINT64
+    title: VARCHAR
+}
+
+entity house_location {
+    * id: UINT64 AI
+    ---
+    title: VARCHAR
+    house_id: UINT64
+}
+
+entity device_type {
+    id UINT64 AI
+    ---
+    type VARCHAR
+}
+
+entity device {
+    * id: UINT64 AI
+    ---
+    title: VARCHAR
+    device_type_id: UINT64
+    house_id: UINT64
+    house_location_id: UINT64
+    serial_number: VARCHAR
+    status: VARCHAR
+    parameters JSON
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+entity telemetry_data {
+    *id: UINT64 AI
+    ---
+    device_id: UINT64
+    status: VARCHAR
+    data: JSON
+    created_at: TIMESTAMP
+}
+
+user "1" *-- "0..*" house : has
+house "1" *-- "0..*" house_location : has
+house_location "1" *-- "0..*" device : has
+device "0..*" -- "1" device_type : has
+device "1" *-- "0..*" telemetry_data
+
+
+@enduml

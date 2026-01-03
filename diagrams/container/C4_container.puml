@@ -24,6 +24,10 @@ Container_Boundary(WHSystem, "Система «Теплый дом»") {
         Container(GateControlService, "Gate Control Service", "Go", "Сервис для управления автоматическими воротами")
     }
 
+    ContainerDb(DeviceDb, "Device Database", "postgres", "База данных пользовательских устройств")
+    ContainerDb(ScenarioDb, "Scenario Database", "postgres", "База данных пользовательских сценариев использования")
+    ContainerDb(TelemetryDb, "Telemetry Database", "postgres", "База данных телеметрии")
+
     ContainerQueue(MessageBus, "Message Bus", "RabbitMQ", "Транспорт для отправки/получения событий")
 }
 
@@ -57,4 +61,7 @@ Rel(LightingService, smartDevice, "Управление датчиками ус�
 Rel(CCTVService, smartDevice, "Управление датчиками устройств видеонаблюдения")
 Rel(GateControlService, smartDevice, "Управление датчиками устройства автоматических ворот")
 
+Rel(DeviceService, DeviceDb, "Запись/чтение данных о пользовательских устройствах")
+Rel(ScenarioService, ScenarioDb, "Запись/чтение данных о пользовательских сценариях")
+Rel(TelemetryService, TelemetryDb, "Запись/чтение данных о телеметрии устройств")
 @enduml

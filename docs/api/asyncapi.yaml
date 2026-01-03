@@ -1,0 +1,184 @@
+asyncapi: 2.6.0
+info:
+  title: Smart Home Event API
+  version: 1.0.0
+  description: |
+    Асинхронное взаимодействие сервисов системы «Умный дом»
+    через RabbitMQ. События используются для передачи телеметрии,
+    изменения состояния устройств и обработки сценариев.
+
+servers:
+  rabbitmq:
+    url: amqp://rabbitmq:5672
+    protocol: amqp
+    description: RabbitMQ message broker
+
+channels:
+  device.state.changed:
+    description: Событие изменения состояния устройства
+    publish:
+      summary: Публикация события изменения состояния устройства
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+
+  telemetry.temperature.reported:
+    description: Телеметрия от устройств отопления и охлаждения
+    publish:
+      summary: Публикация данных температуры
+      message:
+        $ref: '#/components/messages/TelemetryTemperatureReported'
+
+  telemetry.lighting.reported:
+    description: Телеметрия от устройств освещения
+    publish:
+      summary: Публикация данных освещения
+      message:
+        $ref: '#/components/messages/TelemetryLightingReported'
+
+  telemetry.camera.reported:
+    description: Телеметрия от устройств видеонаблюдения
+    publish:
+      summary: Публикация данных видеонаблюдения
+      message:
+        $ref: '#/components/messages/TelemetryCameraReported'
+
+  telemetry.gate.reported:
+    description: Телеметрия от устройств управления воротами
+    publish:
+      summary: Публикация состояния ворот
+      message:
+        $ref: '#/components/messages/TelemetryGateReported'
+
+components:
+  messages:
+    DeviceStateChanged:
+      name: DeviceStateChanged
+      title: Device State Changed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceStateChangedPayload'
+
+    TelemetryTemperatureReported:
+      name: TelemetryTemperatureReported
+      title: Temperature Telemetry Event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryTemperaturePayload'
+
+    TelemetryLightingReported:
+      name: TelemetryLightingReported
+      title: Lighting Telemetry Event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryLightingPayload'
+
+    TelemetryCameraReported:
+      name: TelemetryCameraReported
+      title: Camera Telemetry Event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryCameraPayload'
+
+    TelemetryGateReported:
+      name: TelemetryGateReported
+      title: Gate Telemetry Event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryGatePayload'
+
+  schemas:
+    BaseEvent:
+      type: object
+      required:
+        - event_id
+        - event_type
+        - published_at
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+        published_at:
+          type: string
+          format: timestamp
+
+    DeviceStateChangedPayload:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - device_id
+            - status
+          properties:
+            device_id:
+              type: integer
+              format: int64
+            status:
+              type: string
+
+    TelemetryTemperaturePayload:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - device_id
+            - value
+            - unit
+            - location
+          properties:
+            device_id:
+              type: integer
+              format: int64
+            value:
+              type: number
+              format: float
+            unit:
+              type: string
+              example: C
+            location:
+              type: string
+
+    TelemetryLightingPayload:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - device_id
+            - brightness
+          properties:
+            device_id:
+              type: integer
+              format: int64
+            brightness:
+              type: number
+
+    TelemetryCameraPayload:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - device_id
+            - stream_url
+          properties:
+            device_id:
+              type: integer
+              format: int64
+            stream_url:
+              type: string
+              format: uri
+
+    TelemetryGatePayload:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required:
+            - device_id
+            - state
+          properties:
+            device_id:
+              type: integer
+              format: int64
+            state:
+              type: string
+              example: OPEN

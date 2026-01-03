@@ -1,0 +1,29 @@
+@startuml
+header На примере Сервиса для устройств с датчиками отопления и охлаждения
+
+title Диаграмма компонента «Управление устройствами с датчиками»
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(WarmHouse, "Система «Теплый дом»") {
+    Container_Ext(apiGateway, "API Gateway", "Go", "Шлюз взаимодействия с системой")
+
+    Container(ClimateControlService, "Climate Control Service", "Go", "Сервис для устройств с датчиками отопления и охлаждения") {
+        Component(Controller, "REST Controller", "HTTP/JSON", "Контроллер запросов к данным устройства с датчиками")
+        Component(Service, "Service", "Go", "Бизнес-логика управления данными датчиков в устройстве")
+        Component(Repository, "Repository", "Go", "Репозиторий работы с данными датчиков устройства")
+    }
+}
+
+ContainerDb(Database, "Database", "PostgreSQL", "Хранение информации о данных датчиков устройства")
+ContainerQueue(MessageBus, "Message Bus", "RabbitMQ", "Транспорт для отправки/получения событий")
+
+Rel(apiGateway, Controller, "HTTP/JSON", "Получение данных датчиков типа отопление/охлаждение")
+Rel(Controller, Service, "Получение данных с датчика устройства и дальнейшая обработка")
+Rel(Service, Repository, "Работа с сущностями в базе данных датчиков устройств")
+Rel(Repository, Database, "Запись и получение данных")
+Rel(Service, MessageBus, "Публикация и получение событий состояния датчиков устройств")
+
+@enduml

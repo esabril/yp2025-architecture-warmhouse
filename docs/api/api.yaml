@@ -1,0 +1,361 @@
+openapi: 3.0.3
+info:
+  title: Smart Home API
+  description: API системы «Умный дом»
+  version: 1.0.0
+
+servers:
+  - url: localhost:8080
+
+tags:
+  - name: users
+    description: Управление пользователями
+  - name: houses
+    description: Управление домами и локациями внутри
+  - name: devices
+    description: Управление устройствами и их типами
+  - name: telemetry
+    description: Управление телеметрией
+  
+paths:
+  /users:
+    get:
+      summary: Получить список пользователей
+      tags:
+        - users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Создать пользователя
+      tags:
+        - users
+      description: Регистрация нового пользователя в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Некорректные данные
+        '409':
+          description: Пользователь с таким username или email уже существует
+
+  /houses:
+    get:
+      summary: Получить дома пользователя
+      tags:
+        - houses
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/House'
+
+    post:
+      summary: Создать дом
+      tags:
+        - houses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseCreate'
+      responses:
+        '201':
+          description: Created
+
+  /houses/{houseId}/locations:
+    get:
+      summary: Получить локации дома
+      tags:
+        - houses
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HouseLocation'
+
+  /device-types:
+    get:
+      summary: Получить типы устройств
+      tags:
+        - devices
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceType'
+
+  /devices:
+    get:
+      summary: Получить устройства
+      tags:
+        - devices
+      parameters:
+        - name: house_location_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+
+    post:
+      summary: Добавить устройство
+      tags:
+        - devices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreate'
+      responses:
+        '201':
+          description: Created
+
+  /devices/{deviceId}/telemetry:
+    get:
+      summary: Получить телеметрию устройства
+      tags:
+        - telemetry
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryData'
+
+    post:
+      summary: Добавить запись телеметрии
+      tags:
+        - telemetry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryCreate'
+      responses:
+        '201':
+          description: Created
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+
+    UserCreate:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          example: anna
+        email:
+          type: string
+          format: email
+          example: anna@example.com
+        password:
+          type: string
+          format: password
+          example: strong_password_123
+
+    House:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+
+    HouseCreate:
+      type: object
+      required: [user_id, title]
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+
+    HouseLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        house_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+
+    DeviceType:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+
+    Device:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        device_type_id:
+          type: integer
+          format: int64
+        house_id:
+          type: integer
+          format: int64
+        house_location_id:
+          type: integer
+          format: int64
+        serial_number:
+          type: string
+        status:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DeviceCreate:
+      type: object
+      required:
+        - title
+        - device_type_id
+        - house_id
+        - house_location_id
+        - serial_number
+      properties:
+        title:
+          type: string
+        device_type_id:
+          type: integer
+          format: int64
+        house_id:
+          type: integer
+          format: int64
+        house_location_id:
+          type: integer
+          format: int64
+        serial_number:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+
+    TelemetryData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        device_id:
+          type: integer
+          format: int64
+        status:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    TelemetryCreate:
+      type: object
+      required: [status, data]
+      properties:
+        status:
+          type: string
+        data:
+          type: object
+          additionalProperties: true

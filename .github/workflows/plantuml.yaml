@@ -5,6 +5,9 @@ on:
 #    paths:
 #      - "diagrams/**/*.puml"
 
+permissions:
+  contents: write
+
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
@@ -28,10 +31,20 @@ jobs:
 
       - name: Generate Diagrams
         run: |
-          java -jar plantuml.jar diagrams/**/*.puml
+          java -jar plantuml.jar -force diagrams/**/*.puml
+
+      - name: Debug git status
+        run: |
+          git status
+          find diagrams -name "*.png"
 
       - name: Commit updated diagrams
         run: |
+          if git diff --quiet; then
+            echo "No diagram changes to commit"
+            exit 0
+          fi
+          
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 

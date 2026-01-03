@@ -2,8 +2,8 @@ name: PlantUML Diagrams
 
 on:
   push:
-#    paths:
-#      - "diagrams/**/*.puml"
+    paths:
+      - "diagrams/**/*.puml"
 
 permissions:
   contents: write

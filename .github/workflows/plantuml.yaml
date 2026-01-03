@@ -32,11 +32,6 @@ jobs:
 
       - name: Commit updated diagrams
         run: |
-#          if git diff --quiet; then
-#            echo "No diagram changes"
-#            exit 0
-#          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 

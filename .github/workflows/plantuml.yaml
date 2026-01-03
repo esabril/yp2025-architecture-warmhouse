@@ -19,12 +19,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install PlantUML
-        run: sudo apt-get install plantuml
+      - name: Get PlantUML
+        run: |
+          curl -L -o plantuml.jar https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar
 
       - name: Generate Diagrams
         run: |
-          plantuml diagrams/*/*.puml
+          java -jar plantuml.jar diagrams/**/*.puml
 
 #      - name: Commit updated diagrams
 #        run: |

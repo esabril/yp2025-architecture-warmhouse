@@ -57,5 +57,4 @@ house_location "1" *-- "0..*" device : has
 device "0..*" -- "1" device_type : has
 device "1" *-- "0..*" telemetry_data
 
-
 @enduml

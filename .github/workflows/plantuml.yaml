@@ -2,8 +2,8 @@ name: PlantUML Diagrams
 
 on:
   push:
-    paths:
-      - "diagrams/**/*.puml"
+#    paths:
+#      - "diagrams/**/*.puml"
 
 jobs:
   generate-diagrams:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'oracle'
 
       - name: Install PlantUML
         run: sudo apt-get install plantuml
